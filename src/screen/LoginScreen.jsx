@@ -4,14 +4,47 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
 import {colors} from '../utils/colors';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const LoginScreen = () => {
+    
     const navigation=useNavigation();
     const[visible,setvisible]=useState(true);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
     const handelGoBack=()=>{
         navigation.goBack();
-
     }
+
+    // const handleLogin=()=>{
+    //     navigation.navigate("VehicleInfoScreen")
+        
+    // }
+
+    const handleLogin = async () => {
+        try {
+          const response = await axios.post('http://10.0.2.2:8080/api/login', {
+            email: email,
+            password: password,
+          });
+      
+          if (response.status === 200) {
+            alert('Login successful!');
+            navigation.navigate("VehicleInfoScreen")
+          } else {
+            alert('Login failed: ' + response.data.message);
+          }
+        } catch (error) {
+          alert('Error: ' + error.message);
+        }
+      };
+      
+
+
+    const handelSignup=()=>{
+        navigation.navigate("SIGNUP")
+    };
 
   return (
     <View>
@@ -32,6 +65,8 @@ const LoginScreen = () => {
             style={styles.textInput}
             placeholder='enter your email' 
             placeholderTextColor={colors.secondary}
+            value={email}
+            onChangeText={setEmail}
             keyboardType='email-address'/>
         </View>
         <View style={styles.inputContainer}>
@@ -40,6 +75,9 @@ const LoginScreen = () => {
             style={styles.textInput}
             placeholder='enter your password' 
             placeholderTextColor={colors.secondary}
+            value={password}
+            onChangeText={setPassword}
+         
             secureTextEntry={visible}/>
             <TouchableOpacity onPress={()=>{setvisible((prev)=>!prev);}}>
             <SimpleLineIcons name={"eye"} size={20} color={colors.secondary}/>
@@ -49,10 +87,11 @@ const LoginScreen = () => {
 
 
 <View>
+
     <TouchableOpacity>
         <Text style={styles.forgetPasswordText}>Forgot Password?</Text>
     </TouchableOpacity>
-    <TouchableOpacity style={styles.loginButtonWrapper}>
+    <TouchableOpacity style={styles.loginButtonWrapper} onPress={handleLogin}>
         <Text style={styles.loginText}>Login</Text>
     </TouchableOpacity>
 
@@ -68,7 +107,9 @@ const LoginScreen = () => {
 
 <View style={styles.footerContainer}>
     <Text style={styles.accountText}>dont have an account?</Text>
+    <TouchableOpacity onPress={handelSignup}>
     <Text style={styles.signupText}>Signu up</Text>
+    </TouchableOpacity>
 </View>
 
 
